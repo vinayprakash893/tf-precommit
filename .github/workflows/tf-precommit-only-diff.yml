@@ -28,8 +28,8 @@ jobs:
         id: file_changes
         run: |
           #export DIFF=$(git diff --name-only origin/${{ github.base_ref }} ${{ github.sha }})
-          export DIFF=$(git diff --name-only origin/${{ github.base_ref }} HEAD~1)
-          echo "Diff between ${{ github.base_ref }} and ${{ github.sha }}"
+          export DIFF=$(git diff --name-only origin/${{ github.base_ref }} ${{ github.head_ref }})
+          echo "Diff between ${{ github.base_ref }} and ${{ github.head_ref }}"
           echo "files=$( echo "$DIFF" | xargs echo )" >> $GITHUB_OUTPUT
 
       - name: fix tar dependency in alpine container image
