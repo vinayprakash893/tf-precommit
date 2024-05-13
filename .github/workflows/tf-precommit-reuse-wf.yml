@@ -1,0 +1,54 @@
+name: pre-commit-reuse
+
+on:
+  workflow_call:
+    # inputs:
+    #   environment:
+    #     required: true
+    #     type: string
+    #   terraform_directory:
+    #     required: true
+    #     type: string
+    #   artifact-name:
+    #     required: true
+    #     type: string
+    # secrets:
+    #   ARM_CLIENT_ID :
+    #     required: true
+    #   ARM_SUBSCRIPTION_ID:
+    #     required: true
+    #   ARM_TENANT_ID:
+    #     required: true
+    #   token:
+    #     required: true
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/antonbabenko/pre-commit-terraform:latest # latest used here for simplicity, not recommended
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+
+      - run: |
+          git config --global --add safe.directory $GITHUB_WORKSPACE
+          git fetch --no-tags --prune --depth=1 origin +refs/heads/*:refs/remotes/origin/*
+
+      # - name: fix tar dependency in alpine container image
+      #   run: |
+      #     apk --no-cache add tar
+      #     # check python modules installed versions
+      #     python -m pip freeze --local
+
+      - name: Cache pre-commit since we use pre-commit from container
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-3|${{ hashFiles('.pre-commit-config.yaml') }}
+
+      - name: Execute pre-commit
+        run: |
+          pre-commit run --all-files --color=always
