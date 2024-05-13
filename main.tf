@@ -15,7 +15,7 @@ terraform {
   }
 }
 
-somethings
+somethingssss
 provider "azurerm" {
   features {}
   skip_provider_registration = true
